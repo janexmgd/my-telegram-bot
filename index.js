@@ -9,9 +9,6 @@ dotenv.config();
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 
 const SERVER_URL = process.env.SERVER_URL;
-if (process.env.TELEGRAM_TOKEN == undefined || SERVER_URL == undefined) {
-  return console.log('failed no environment');
-}
 // Telegram API Configuration
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}`;
 const URI = `/webhook/${process.env.TELEGRAM_TOKEN}`;
@@ -76,7 +73,14 @@ server.post(URI, async (req, res) => {
   }
 });
 server.listen(PORT, '0.0.0.0', async () => {
-  await setupWebhook();
-  bot.launch();
-  console.log(`bot tele and Webhook RUN at PORT ${PORT}`);
+  try {
+    await setupWebhook();
+    bot.launch();
+    console.log(`bot tele and Webhook RUN at PORT ${PORT}`);
+    if (process.env.TELEGRAM_TOKEN == undefined || SERVER_URL == undefined) {
+      throw new Error('failed no environment');
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });
