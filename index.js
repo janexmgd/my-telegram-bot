@@ -9,6 +9,9 @@ dotenv.config();
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 
 const SERVER_URL = process.env.SERVER_URL;
+if (process.env.TELEGRAM_TOKEN == undefined || SERVER_URL == undefined) {
+  return console.log('failed no environment');
+}
 // Telegram API Configuration
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}`;
 const URI = `/webhook/${process.env.TELEGRAM_TOKEN}`;
