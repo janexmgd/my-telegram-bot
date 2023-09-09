@@ -54,7 +54,7 @@ const setupWebhook = async () => {
 };
 const server = express();
 server.use(express.json());
-const PORT = 9642;
+const PORT = process.env.PORT;
 
 server.get('/', (req, res) => {
   res.json({
