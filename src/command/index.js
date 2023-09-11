@@ -36,6 +36,7 @@ const command = async (reqBody) => {
       }
       if (messageText.match(regexLink)) {
         try {
+          const urlTikTok = messageText;
           ctx.reply('please waiting');
           const p = await scraper(urlTikTok);
           const videoUrl = p.data.url;
