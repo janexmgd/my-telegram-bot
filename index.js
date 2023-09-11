@@ -46,6 +46,9 @@ server.post(URI, async (req, res) => {
 server.listen(PORT, '0.0.0.0', async () => {
   try {
     await setupWebhook();
+    // console.log(
+    //   `${TELEGRAM_API}/setWebhook?url=${webhookURL}&drop_pending_updates=true`
+    // );
     bot.launch();
     console.log(`bot tele and Webhook RUN at PORT ${PORT}`);
     if (process.env.TELEGRAM_TOKEN == undefined || SERVER_URL == undefined) {
