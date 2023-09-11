@@ -8,6 +8,8 @@ import scraper from './src/helper/scraper.js';
 dotenv.config();
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
+const regexLink =
+  /(https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+|https:\/\/vt\.tiktok\.com\/[\w.-]+)/g;
 
 const SERVER_URL = process.env.SERVER_URL;
 // Telegram API Configuration
@@ -29,15 +31,29 @@ bot.use(async (ctx, next) => {
       const urlTikTok = commandParts[1];
 
       try {
-        ctx.reply('please waiting');
+        ctx.reply(`downloading ${urlTikTok}`);
         const p = await scraper(urlTikTok);
         const videoUrl = p.data.url;
         const response = await axios.get(videoUrl, { responseType: 'stream' });
         await ctx.replyWithVideo({ source: response.data });
         ctx.reply('success download video');
       } catch (error) {
-        console.error('Gagal mengunduh video:', error);
+        ctx.reply(error.message);
       }
+    }
+  }
+  const matches = messageText.match(regexLink);
+  if (matches) {
+    try {
+      const urlTikTok = messageText;
+      ctx.reply(`downloading ${urlTikTok}`);
+      const p = await scraper(urlTikTok);
+      const videoUrl = p.data.url;
+      const response = await axios.get(videoUrl, { responseType: 'stream' });
+      await ctx.replyWithVideo({ source: response.data });
+      ctx.reply('success download video');
+    } catch (error) {
+      ctx.reply(error.message);
     }
   }
   return;
