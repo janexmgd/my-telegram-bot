@@ -55,6 +55,8 @@ bot.use(async (ctx, next) => {
     } catch (error) {
       ctx.reply(error.message);
     }
+  } else {
+    ctx.reply('made with love by me xixixixiix');
   }
   return;
 });
