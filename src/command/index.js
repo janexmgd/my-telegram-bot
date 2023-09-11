@@ -5,7 +5,7 @@ import bot from '../app/bot.js';
 const command = async (reqBody) => {
   try {
     // middleware untuk nangkap ttdl
-    bot.handleUpdate(reqBody);
+    // bot.handleUpdate(reqBody);
     bot.use(async (ctx, next) => {
       const messageText = ctx.message.text;
 
