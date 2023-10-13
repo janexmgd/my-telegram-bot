@@ -39,7 +39,9 @@ bot.use(async (ctx, next) => {
           const response = await axios.get(url, { responseType: 'stream' });
           await ctx.replyWithVideo({ source: response.data });
         } else {
-          ctx.reply(`processing ${res.data.length} image from slideshow type`);
+          ctx.reply(
+            `processing ${res.data.url.length} image from slideshow type`
+          );
           for (let index = 0; index < res.data.url.length; index++) {
             const imgUrl = res.data.url[index];
             const responseImg = await axios.get(imgUrl, {
@@ -66,7 +68,9 @@ bot.use(async (ctx, next) => {
         const response = await axios.get(url, { responseType: 'stream' });
         await ctx.replyWithVideo({ source: response.data });
       } else {
-        ctx.reply(`processing ${res.data.length} image from slideshow type`);
+        ctx.reply(
+          `processing ${res.data.url.length} image from slideshow type`
+        );
         for (let index = 0; index < res.data.url.length; index++) {
           const imgUrl = res.data.url[index];
           const responseImg = await axios.get(imgUrl, {
