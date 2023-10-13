@@ -66,9 +66,9 @@ bot.use(async (ctx, next) => {
         const response = await axios.get(url, { responseType: 'stream' });
         await ctx.replyWithVideo({ source: response.data });
       } else {
-        ctx.reply('processing image');
-        for (let index = 0; index < url.length; index++) {
+        for (let index = 0; index < res.data.url.length; index++) {
           const imgUrl = res.data.url[index];
+          ctx.reply(`processing image ${imgUrl}`);
           const responseImg = await axios.get(imgUrl, {
             responseType: 'arraybuffer',
           });
