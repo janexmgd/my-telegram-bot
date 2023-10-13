@@ -41,7 +41,7 @@ bot.use(async (ctx, next) => {
         } else {
           ctx.reply('processing image');
           for (let index = 0; index < url.length; index++) {
-            const imgUrl = res.data.url[0];
+            const imgUrl = res.data.url[index];
             const responseImg = await axios.get(imgUrl, {
               responseType: 'stream',
             });
@@ -59,16 +59,28 @@ bot.use(async (ctx, next) => {
     try {
       const urlTikTok = messageText;
       ctx.reply(`downloading ${urlTikTok}`);
-      const p = await scraper(urlTikTok);
-      const videoUrl = p.data.url;
-      const response = await axios.get(videoUrl, { responseType: 'stream' });
-      await ctx.replyWithVideo({ source: response.data });
-      ctx.reply('success download video');
+      const res = await scraper(urlTikTok);
+      if (res.data.type == 'video') {
+        ctx.reply('processing video');
+        const url = res.data.url;
+        const response = await axios.get(url, { responseType: 'stream' });
+        await ctx.replyWithVideo({ source: response.data });
+      } else {
+        ctx.reply('processing image');
+        for (let index = 0; index < url.length; index++) {
+          const imgUrl = res.data.url[index];
+          const responseImg = await axios.get(imgUrl, {
+            responseType: 'stream',
+          });
+          await ctx.replyWithPhoto({ source: responseImg.data });
+        }
+      }
+      ctx.reply('task succeed');
     } catch (error) {
       ctx.reply(error.message);
     }
   } else {
-    ctx.reply('made with love by me xixixixiix');
+    ctx.reply('yang bener aja kontol');
   }
   return;
 });
