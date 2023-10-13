@@ -34,10 +34,12 @@ bot.use(async (ctx, next) => {
         ctx.reply(`downloading ${urlTikTok}`);
         const res = await scraper(urlTikTok);
         if (res.data.type == 'video') {
+          ctx.reply('processing video');
           const url = res.data.url;
           const response = await axios.get(url, { responseType: 'stream' });
           await ctx.replyWithVideo({ source: response.data });
         } else {
+          ctx.reply('processing image');
           for (let index = 0; index < url.length; index++) {
             const imgUrl = res.data.url[0];
             const responseImg = await axios.get(imgUrl, {
