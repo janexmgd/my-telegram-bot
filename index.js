@@ -5,11 +5,13 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 import client from './src/app/client.js';
 import scraper from './src/helper/scraper.js';
+import XTwitterDL from './src/helper/tiktokDl.js';
 dotenv.config();
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
-const regexLink =
+const TiktokLink =
   /(https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+|https:\/\/vt\.tiktok\.com\/[\w.-]+)/g;
+const TwitterLink = /https:\/\/(www\.)?[^/]+\/[^/]+\/status\/\d+\?s=\d+/g;
 
 const SERVER_URL = process.env.SERVER_URL;
 // Telegram API Configuration
@@ -56,8 +58,9 @@ bot.use(async (ctx, next) => {
       }
     }
   }
-  const matches = messageText.match(regexLink);
-  if (matches) {
+  const isTiktokLink = messageText.match(TiktokLink);
+  const isTwitterLink = messageText.match(TwitterLink);
+  if (isTiktokLink) {
     try {
       const urlTikTok = messageText;
       ctx.reply(`downloading ${urlTikTok}`);
@@ -83,8 +86,32 @@ bot.use(async (ctx, next) => {
     } catch (error) {
       ctx.reply(error.message);
     }
+  } else if (isTwitterLink) {
+    try {
+      const urlTwitter = messageText;
+      ctx.reply(`downloading ${urlTwitter}`);
+      const data = await XTwitterDL(urlTwitter);
+      //
+      ctx.reply('processing');
+      for (let index = 0; index < data.result.media.length; index++) {
+        if (res.data.result.media[index].type == 'video') {
+          ctx.reply('processing video');
+          const url = res.data.result.media[index].url;
+          const response = await axios.get(url, { responseType: 'stream' });
+          await ctx.replyWithVideo({ source: response.data });
+        } else {
+          const imgUrl = res.data.result.media[index].url;
+          const responseImg = await axios.get(imgUrl, {
+            responseType: 'arraybuffer',
+          });
+          await ctx.replyWithPhoto({ source: responseImg.data });
+        }
+      }
+    } catch (error) {
+      ctx.reply(error.message);
+    }
   } else {
-    ctx.reply('yang bener aja kontol');
+    ctx.reply('Pinggg!!!!!!');
   }
   return;
 });
