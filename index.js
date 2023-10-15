@@ -11,8 +11,7 @@ dotenv.config();
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 const TiktokLink =
   /(https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+|https:\/\/vt\.tiktok\.com\/[\w.-]+)/g;
-const TwitterLink = /https:\/\/(www\.)?[^/]+\/[^/]+\/status\/\d+\?[^/]+/g
-
+const TwitterLink = /https:\/\/(www\.)?[^/]+\/[^/]+\/status\/\d+\?[^/]+/g;
 
 const SERVER_URL = process.env.SERVER_URL;
 // Telegram API Configuration
@@ -54,8 +53,10 @@ bot.use(async (ctx, next) => {
           }
         }
         ctx.reply('task succeed');
+        return;
       } catch (error) {
         ctx.reply(error.message);
+        return;
       }
     }
   }
@@ -84,8 +85,10 @@ bot.use(async (ctx, next) => {
         }
       }
       ctx.reply('task succeed');
+      return;
     } catch (error) {
       ctx.reply(error.message);
+      return;
     }
   } else if (isTwitterLink) {
     try {
@@ -108,11 +111,14 @@ bot.use(async (ctx, next) => {
         }
       }
       ctx.reply('task success');
+      return;
     } catch (error) {
       ctx.reply(error.message);
+      return;
     }
   } else {
     ctx.reply('Pinggg!!!!!!');
+    return;
   }
   return;
 });
