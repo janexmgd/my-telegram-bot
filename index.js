@@ -167,6 +167,7 @@ bot.use(async (ctx, next) => {
       //   responseType: 'arraybuffer',
       // });
       // ctx.replyWithPhoto({ source: res.data }, { caption: 'thumbnail' });
+      ctx.reply(JSON.stringify(data));
       if (data.hd) {
         url = data.hd;
         const res = await axios.get(url, {
