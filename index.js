@@ -33,7 +33,7 @@ bot.use(async (ctx, next) => {
       const urlTikTok = commandParts[1];
 
       try {
-        ctx.reply(`downloading ${urlTikTok}`);
+        // ctx.reply(`downloading ${urlTikTok}`);
         const res = await scraper(urlTikTok);
         if (res.data.type == 'video') {
           ctx.reply('processing video');
@@ -71,17 +71,17 @@ bot.use(async (ctx, next) => {
         ctx.reply('processing video');
         const url = res.data.url;
         const response = await axios.get(url, { responseType: 'stream' });
-        ctx.replyWithVideo({ source: response.data });
+        await ctx.replyWithVideo({ source: response.data });
       } else {
         ctx.reply(
           `processing ${res.data.url.length} image from slideshow type`
         );
-        for (let index = 0; index < res.data.url.length; index++) {
+        for (let index = 0; index <= res.data.url.length; index++) {
           const imgUrl = res.data.url[index];
           const responseImg = await axios.get(imgUrl, {
             responseType: 'arraybuffer',
           });
-          ctx.replyWithPhoto({ source: responseImg.data });
+          await ctx.replyWithPhoto({ source: responseImg.data });
         }
       }
       ctx.reply('task succeed');
@@ -101,14 +101,14 @@ bot.use(async (ctx, next) => {
           ctx.reply('processing video');
           const url = res.data.result.media[index].url;
           const response = await axios.get(url, { responseType: 'stream' });
-          ctx.replyWithVideo({ source: response.data });
+          await ctx.replyWithVideo({ source: response.data });
         } else {
           ctx.reply('processing photo');
           const imgUrl = data.result.media[index].url;
           const responseImg = await axios.get(imgUrl, {
             responseType: 'arraybuffer',
           });
-          ctx.replyWithPhoto({ source: responseImg.data });
+          await ctx.replyWithPhoto({ source: responseImg.data });
         }
       }
       ctx.reply('task success');
