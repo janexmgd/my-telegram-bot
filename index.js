@@ -16,7 +16,7 @@ const TiktokLink =
   /(https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+|https:\/\/vt\.tiktok\.com\/[\w.-]+)/g;
 const TwitterLink = /https:\/\/(www\.)?[^/]+\/[^/]+\/status\/\d+\?[^/]+/g;
 const InstaLink =
-  /^https:\/\/www\.instagram\.com\/p\/[A-Za-z0-9_-]+(\/\?[^/]+)?$/;
+  /^https:\/\/www\.instagram\.com\/(?:p|reel)\/[A-Za-z0-9_-]+\/\?(?:[^=&]+=[^&]+&)*[^=&]+=[^&]+/;
 const FacebookLink =
   /https:\/\/fb\.watch\/[^\s]+|https:\/\/www\.facebook\.com\/[^\s]+/g;
 const SERVER_URL = process.env.SERVER_URL;
