@@ -76,7 +76,7 @@ bot.use(async (ctx, next) => {
         ctx.reply(
           `processing ${res.data.url.length} image from slideshow type`
         );
-        for (let index = 0; index <= res.data.url.length; index++) {
+        for (let index = 0; index < res.data.url.length; index++) {
           const imgUrl = res.data.url[index];
           const responseImg = await axios.get(imgUrl, {
             responseType: 'arraybuffer',
@@ -98,7 +98,7 @@ bot.use(async (ctx, next) => {
       ctx.reply(
         `processing twitter link with ${data.result.media.length} media`
       );
-      for (let index = 0; index <= data.result.media.length; index++) {
+      for (let index = 0; index < data.result.media.length; index++) {
         if (data.result.media[index].type == 'video') {
           // ctx.reply('processing video');
           const url = res.data.result.media[index].url;
