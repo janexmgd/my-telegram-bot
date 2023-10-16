@@ -155,6 +155,7 @@ bot.use(async (ctx, next) => {
         await ctx.reply('error bos');
       }
     }
+    ctx.reply(data);
   } else {
     ctx.reply('Pinggg!!!!!!');
     return;
