@@ -6,8 +6,9 @@ import axios from 'axios';
 import urlModule from 'url';
 import client from './src/app/client.js';
 import scraper from './src/helper/scraper.js';
-import XTwitterDL from './src/helper/tiktokDl.js';
+import XTwitterDL from './src/helper/twitterDL.js';
 import instaDL from './src/helper/instaDL.js';
+import FbDL from './src/helper/facebookDL.js';
 dotenv.config();
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
@@ -16,7 +17,8 @@ const TiktokLink =
 const TwitterLink = /https:\/\/(www\.)?[^/]+\/[^/]+\/status\/\d+\?[^/]+/g;
 const InstaLink =
   /^https:\/\/www\.instagram\.com\/p\/[A-Za-z0-9_-]+(\/\?[^/]+)?$/;
-
+const FacebookLink =
+  /https:\/\/fb\.watch\/[^\s]+|https:\/\/www\.facebook\.com\/[^\s]+/g;
 const SERVER_URL = process.env.SERVER_URL;
 // Telegram API Configuration
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}`;
@@ -67,6 +69,7 @@ bot.use(async (ctx, next) => {
   const isTiktokLink = messageText.match(TiktokLink);
   const isTwitterLink = messageText.match(TwitterLink);
   const isInstaLink = messageText.match(InstaLink);
+  const isFacebookLink = messageText.match(FacebookLink);
   if (isTiktokLink) {
     try {
       const urlTikTok = messageText;
@@ -100,9 +103,7 @@ bot.use(async (ctx, next) => {
       const urlTwitter = messageText;
       const data = await XTwitterDL(urlTwitter);
       //
-      ctx.reply(
-        `processing twitter link with ${data.result.media.length} media`
-      );
+      ctx.reply(`processing twitter link`);
       for (let index = 0; index < data.result.media.length; index++) {
         if (data.result.media[index].type == 'video') {
           // ctx.reply('processing video');
@@ -156,6 +157,37 @@ bot.use(async (ctx, next) => {
       }
     }
     ctx.reply(data);
+  } else if (isFacebookLink) {
+    try {
+      const urlFacebook = messageText;
+      ctx.reply('processing facebook link');
+      const data = await FbDL(urlFacebook);
+      let url;
+      const res = await axios.get(data.thumbnail, {
+        responseType: 'arraybuffer',
+      });
+      ctx.replyWithPhoto({ source: res.data }, { caption: 'thumbnail' });
+      if (data.hd) {
+        url = data.hd;
+        const res = await axios.get(url, {
+          responseType: 'stream',
+        });
+        await ctx.replyWithVideo({ source: res.data });
+        return;
+      } else if (data.sd) {
+        url = data.sd;
+        const res = await axios.get(url, {
+          responseType: 'stream',
+        });
+        await ctx.replyWithVideo({ source: res.data });
+        return;
+      } else {
+        ctx.reply('cannot get sd and hd video link');
+      }
+    } catch (error) {
+      ctx.reply(error);
+      return;
+    }
   } else {
     ctx.reply('Pinggg!!!!!!');
     return;
