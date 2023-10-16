@@ -130,6 +130,7 @@ bot.use(async (ctx, next) => {
     ctx.reply('processing instagram link');
     for (let index = 0; index < data.length; index++) {
       let urlMedia = data[index].download_link;
+      console.log(urlMedia);
       const parsedUrl = urlModule.parse(urlMedia);
       const pathnameSegments = parsedUrl.pathname.split('/');
       const filenameQuery = pathnameSegments[pathnameSegments.length - 1]; // Mengambil bagian terakhir dari path sebagai nama file
@@ -138,6 +139,7 @@ bot.use(async (ctx, next) => {
       const extensionMatch = filename.match(/\.(\w+)$/);
       if (extensionMatch) {
         const extension = extensionMatch[1];
+        console.log(extension);
         if (extension == 'jpg') {
           const responseImg = await axios.get(urlMedia, {
             responseType: 'arraybuffer',
