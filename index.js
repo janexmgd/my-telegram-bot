@@ -95,15 +95,17 @@ bot.use(async (ctx, next) => {
       const urlTwitter = messageText;
       const data = await XTwitterDL(urlTwitter);
       //
-      ctx.reply('processing twitter link');
-      for (let index = 0; index < data.result.media.length; index++) {
+      ctx.reply(
+        `processing twitter link with ${data.result.media.length} media`
+      );
+      for (let index = 0; index <= data.result.media.length; index++) {
         if (data.result.media[index].type == 'video') {
-          ctx.reply('processing video');
+          // ctx.reply('processing video');
           const url = res.data.result.media[index].url;
           const response = await axios.get(url, { responseType: 'stream' });
           await ctx.replyWithVideo({ source: response.data });
         } else {
-          ctx.reply('processing photo');
+          // ctx.reply('processing photo');
           const imgUrl = data.result.media[index].url;
           const responseImg = await axios.get(imgUrl, {
             responseType: 'arraybuffer',
