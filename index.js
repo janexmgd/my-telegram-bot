@@ -3,15 +3,19 @@ import express from 'express';
 import { Telegraf } from 'telegraf';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import urlModule from 'url';
 import client from './src/app/client.js';
 import scraper from './src/helper/scraper.js';
 import XTwitterDL from './src/helper/tiktokDl.js';
+import instaDL from './src/helper/instaDL.js';
 dotenv.config();
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 const TiktokLink =
   /(https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+|https:\/\/vt\.tiktok\.com\/[\w.-]+)/g;
 const TwitterLink = /https:\/\/(www\.)?[^/]+\/[^/]+\/status\/\d+\?[^/]+/g;
+const InstaLink =
+  /^https:\/\/www\.instagram\.com\/p\/[A-Za-z0-9_-]+(\/\?[^/]+)?$/;
 
 const SERVER_URL = process.env.SERVER_URL;
 // Telegram API Configuration
@@ -62,6 +66,7 @@ bot.use(async (ctx, next) => {
   }
   const isTiktokLink = messageText.match(TiktokLink);
   const isTwitterLink = messageText.match(TwitterLink);
+  const isInstaLink = messageText.match(InstaLink);
   if (isTiktokLink) {
     try {
       const urlTikTok = messageText;
@@ -118,6 +123,35 @@ bot.use(async (ctx, next) => {
     } catch (error) {
       ctx.reply(error.message);
       return;
+    }
+  } else if (isInstaLink) {
+    const urlInsta = messageText;
+    const data = await instaDL(urlInsta);
+    ctx.reply('processing instagram link');
+    for (let index = 0; index < data.length; index++) {
+      let urlMedia = data[index].download_link;
+      const parsedUrl = urlModule.parse(urlMedia);
+      const pathnameSegments = parsedUrl.pathname.split('/');
+      const filenameQuery = pathnameSegments[pathnameSegments.length - 1]; // Mengambil bagian terakhir dari path sebagai nama file
+      // Menghapus query string dari nama file
+      const filename = filenameQuery.split('?')[0];
+      const extensionMatch = filename.match(/\.(\w+)$/);
+      if (extensionMatch) {
+        const extension = extensionMatch[1];
+        if (extension == 'jpg') {
+          const responseImg = await axios.get(urlMedia, {
+            responseType: 'arraybuffer',
+          });
+          await ctx.replyWithPhoto({ source: responseImg.data });
+        } else {
+          const responseVideo = await axios.get(urlMedia, {
+            responseType: 'stream',
+          });
+          await ctx.replyWithVideo({ source: responseVideo.data });
+        }
+      } else {
+        await ctx.reply('error bos');
+      }
     }
   } else {
     ctx.reply('Pinggg!!!!!!');
