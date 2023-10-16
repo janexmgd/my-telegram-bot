@@ -163,10 +163,10 @@ bot.use(async (ctx, next) => {
       ctx.reply('processing facebook link');
       const data = await FbDL(urlFacebook);
       let url;
-      const res = await axios.get(data.thumbnail, {
-        responseType: 'arraybuffer',
-      });
-      ctx.replyWithPhoto({ source: res.data }, { caption: 'thumbnail' });
+      // const res = await axios.get(data.thumbnail, {
+      //   responseType: 'arraybuffer',
+      // });
+      // ctx.replyWithPhoto({ source: res.data }, { caption: 'thumbnail' });
       if (data.hd) {
         url = data.hd;
         const res = await axios.get(url, {
@@ -185,6 +185,7 @@ bot.use(async (ctx, next) => {
         ctx.reply('cannot get sd and hd video link');
       }
     } catch (error) {
+      console.log(error);
       ctx.reply(error);
       return;
     }
