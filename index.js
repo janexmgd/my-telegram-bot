@@ -163,12 +163,8 @@ bot.use(async (ctx, next) => {
       ctx.reply('processing facebook link');
       const data = await FbDL(urlFacebook);
       let url;
-      // const res = await axios.get(data.thumbnail, {
-      //   responseType: 'arraybuffer',
-      // });
-      // ctx.replyWithPhoto({ source: res.data }, { caption: 'thumbnail' });
-      // ctx.reply(JSON.stringify(data.sd));
-      // return;
+      console.log(data.hd);
+      console.log(data.sd);
       if (data.hd) {
         url = data.hd;
         const res = await axios.get(url, {
@@ -199,8 +195,11 @@ bot.use(async (ctx, next) => {
 });
 const setupWebhook = async () => {
   try {
+    // console.log(url);
+    const url = `${TELEGRAM_API}/setWebhook?url=${webhookURL}&drop_pending_updates=true`;
+    console.log(url);
     const { data } = await client({
-      url: `${TELEGRAM_API}/setWebhook?url=${webhookURL}&drop_pending_updates=true`,
+      url: url,
       method: 'GET',
     });
     console.log(data);
@@ -221,8 +220,10 @@ server.get('/', (req, res) => {
 });
 server.post(URI, async (req, res) => {
   try {
+    console.log(req.body);
     await bot.handleUpdate(req.body);
     console.log('PING !!!!!!');
+    console.log(req.body);
     res.status(200).send('ok');
   } catch (error) {
     console.log(error);
