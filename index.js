@@ -163,21 +163,27 @@ bot.use(async (ctx, next) => {
       ctx.reply('processing facebook link');
       const data = await FbDL(urlFacebook);
       let url;
-      console.log(`ini hd: ${data.hd}`);
-      console.log(`ini sd: ${data.sd}`);
+      // console.log(`ini hd: ${data.hd}`);
+      // console.log(`ini sd: ${data.sd}`);
       if (data?.hd) {
         url = data.hd;
-        const res = await axios.get(url, {
-          responseType: 'stream',
-        });
-        await ctx.replyWithVideo({ source: res.data });
+        // const res = await axios.get(url, {
+        //   responseType: 'stream',
+        // });
+        // await ctx.replyWithVideo({ source: res.data });
+        ctx.reply(`
+        hd link : ${url}
+        `);
         return;
       } else if (data?.sd) {
         url = data.sd;
-        const res = await axios.get(url, {
-          responseType: 'stream',
-        });
-        await ctx.replyWithVideo({ source: res.data });
+        // const res = await axios.get(url, {
+        //   responseType: 'stream',
+        // });
+        // await ctx.replyWithVideo({ source: res.data });
+        ctx.reply(`
+        sd link : ${url}
+        `);
         return;
       } else {
         ctx.reply('cannot get sd and hd video link');
