@@ -153,7 +153,11 @@ bot.use(async (ctx, next) => {
           await ctx.replyWithVideo({ source: responseVideo.data });
         }
       } else {
-        await ctx.reply('error bos');
+        // for reel ig
+        const responseVideo = await axios.get(urlMedia, {
+          responseType: 'stream',
+        });
+        await ctx.replyWithVideo({ source: responseVideo.data });
       }
     }
     ctx.reply(data);
