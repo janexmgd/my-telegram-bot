@@ -81,15 +81,15 @@ bot.use(async (ctx, next) => {
       const res = await scraper(urlTikTok);
       if (res.data.type == 'video') {
         loadingMessage = await ctx.reply(`processing tiktok video`);
+
         loadingId = loadingMessage.message_id;
+        await ctx.deleteMessage(loadingId);
         const caption = `<a href="${urlTikTok}">🔗 Tiktok Link</a>`;
-        const urlX = res.data.url;
-        await ctx.editMessageMedia(chatId, loadingId, {
-          type: 'video',
-          media: { url: urlX },
-          caption: caption,
-          parse_mode: 'HTML',
-        });
+        // const urlX = res.data.url;
+        await ctx.replyWithVideo(
+          { source: res.data.url },
+          { caption: caption }
+        );
       } else {
         ctx.reply(
           `processing ${res.data.url.length} image from slideshow type`
