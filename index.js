@@ -101,11 +101,9 @@ bot.use(async (ctx, next) => {
         loadingId = loadingMessage.message_id;
         await ctx.deleteMessage(loadingId);
         const arrMedia = [];
+        let slideshowmsg = await ctx.reply(`processing tiktok slideshow`);
+        let slideshowmsgId = slideshowmsg.message_id;
         for (let index = 0; index < res.data.url.length; index++) {
-          let slideshowmsg = await ctx.reply(
-            `processing slideshow ${index}+1 / ${res.data.url.length}`
-          );
-          let slideshowmsgId = slideshowmsg.message_id;
           const imgUrl = res.data.url[index];
           const responseImg = await axios.get(imgUrl, {
             responseType: 'arraybuffer',
@@ -115,8 +113,8 @@ bot.use(async (ctx, next) => {
             caption: caption,
             parse_mode: 'HTML',
           });
-          await ctx.deleteMessage(slideshowmsgId);
         }
+        await ctx.deleteMessage(slideshowmsgId);
 
         const chunkArrMedia = chunkArray(arrMedia, 3);
         for (const chunk of chunkArrMedia) {
