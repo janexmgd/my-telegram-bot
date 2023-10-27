@@ -1,10 +1,10 @@
 import axios from 'axios';
 import urlModule from 'url';
-import scraper from '../helper/scraper';
-import XTwitterDL from '../helper/twitterDL';
-import instaDL from '../helper/instaDL';
-import FbDL from '../helper/facebookDL';
-import { processTikTokCommand } from '../command/start.tiktokdl';
+import scraper from '../helper/scraper.js';
+import XTwitterDL from '../helper/twitterDL.js';
+import instaDL from '../helper/instaDL.js';
+import FbDL from '../helper/facebookDL.js';
+import { processTikTokCommand } from '../command/start.tiktokdl.js';
 
 const TiktokLink =
   /(https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+|https:\/\/vt\.tiktok\.com\/[\w.-]+)/g;
