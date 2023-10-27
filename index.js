@@ -107,7 +107,7 @@ bot.use(async (ctx, next) => {
             responseType: 'arraybuffer',
           });
           arrMedia.push({
-            media: responseImg.data,
+            media: res.data.url,
             caption: caption,
             parse_mode: 'HTML',
           });
