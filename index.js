@@ -79,16 +79,20 @@ bot.use(async (ctx, next) => {
       const urlTikTok = messageText;
       // ctx.reply(`downloading ${urlTikTok}`);
       const res = await scraper(urlTikTok);
+      const caption = `<a href="${urlTikTok}">🔗Tiktok</a>`;
       if (res.data.type == 'video') {
         loadingMessage = await ctx.reply(`processing tiktok video`);
 
         loadingId = loadingMessage.message_id;
         await ctx.deleteMessage(loadingId);
-        const caption = `<a href="${urlTikTok}">🔗 Tiktok Link</a>`;
+
         const resImg = await axios.get(res.data.url, {
           responseType: 'stream',
         });
-        await ctx.replyWithVideo({ source: resImg.data }, { caption: caption });
+        await ctx.replyWithVideo(
+          { source: resImg.data },
+          { caption: caption, parse_mode: 'HTML' }
+        );
       } else {
         ctx.reply(
           `processing ${res.data.url.length} image from slideshow type`
