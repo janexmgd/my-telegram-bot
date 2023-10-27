@@ -83,10 +83,10 @@ bot.use(async (ctx, next) => {
         loadingMessage = await ctx.reply(`processing tiktok video`);
         loadingId = loadingMessage.message_id;
         const caption = `<a href="${urlTikTok}">🔗 Tiktok Link</a>`;
-        const url = res.data.url;
-        await ctx.telegram.editMessageMedia(chatId, loadingId, {
+        const urlX = res.data.url;
+        await ctx.editMessageMedia(chatId, loadingId, {
           type: 'video',
-          media: { url: url },
+          media: { url: urlX },
           caption: caption,
           parse_mode: 'HTML',
         });
