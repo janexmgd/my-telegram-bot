@@ -9,6 +9,7 @@ import scraper from './src/helper/scraper.js';
 import XTwitterDL from './src/helper/twitterDL.js';
 import instaDL from './src/helper/instaDL.js';
 import FbDL from './src/helper/facebookDL.js';
+import chunkArray from './src/helper/chunkArr.js';
 dotenv.config();
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
@@ -79,10 +80,12 @@ bot.use(async (ctx, next) => {
       const urlTikTok = messageText;
       // ctx.reply(`downloading ${urlTikTok}`);
       const res = await scraper(urlTikTok);
-      const caption = `<a href="${urlTikTok}">🔗Tiktok</a>`;
+      const caption = `
+      <a href="${urlTikTok}">Link Tiktok</a>
+      Made with Love by janexmgd
+      `;
       if (res.data.type == 'video') {
         loadingMessage = await ctx.reply(`processing tiktok video`);
-
         loadingId = loadingMessage.message_id;
         await ctx.deleteMessage(loadingId);
 
@@ -94,15 +97,24 @@ bot.use(async (ctx, next) => {
           { caption: caption, parse_mode: 'HTML' }
         );
       } else {
-        ctx.reply(
-          `processing ${res.data.url.length} image from slideshow type`
-        );
+        loadingMessage = await ctx.reply(`processing tiktok image`);
+        loadingId = loadingMessage.message_id;
+        await ctx.deleteMessage(loadingId);
+        const arrMedia = [];
         for (let index = 0; index < res.data.url.length; index++) {
           const imgUrl = res.data.url[index];
           const responseImg = await axios.get(imgUrl, {
             responseType: 'arraybuffer',
           });
-          await ctx.replyWithPhoto({ source: responseImg.data });
+          arrMedia.push({
+            media: responseImg.data,
+            caption: caption,
+            parse_mode: 'HTML',
+          });
+        }
+        const chunkArrMedia = chunkArray(arrMedia, 10);
+        for (const chunk of chunkArrMedia) {
+          await ctx.sendMediaGroup(chunk);
         }
       }
       return;
