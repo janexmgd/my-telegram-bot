@@ -88,7 +88,7 @@ bot.use(async (ctx, next) => {
         const resImg = await axios.get(res.data.url, {
           responseType: 'stream',
         });
-        await ctx.replyWithVideo({ source: resImg }, { caption: caption });
+        await ctx.replyWithVideo({ source: resImg.data }, { caption: caption });
       } else {
         ctx.reply(
           `processing ${res.data.url.length} image from slideshow type`
