@@ -102,17 +102,22 @@ bot.use(async (ctx, next) => {
         await ctx.deleteMessage(loadingId);
         const arrMedia = [];
         for (let index = 0; index < res.data.url.length; index++) {
+          loadingMessage = await ctx.reply(
+            `processing slideshow ${index} / ${res.data.length}`
+          );
           const imgUrl = res.data.url[index];
           const responseImg = await axios.get(imgUrl, {
             responseType: 'arraybuffer',
           });
           arrMedia.push({
-            media: res.data.url,
+            media: responseImg,
             caption: caption,
             parse_mode: 'HTML',
           });
+          await ctx.deleteMessage(loadingMessage.id);
         }
-        const chunkArrMedia = chunkArray(arrMedia, 10);
+
+        const chunkArrMedia = chunkArray(arrMedia, 3);
         for (const chunk of chunkArrMedia) {
           await ctx.sendMediaGroup(chunk);
         }
