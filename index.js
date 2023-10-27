@@ -85,11 +85,10 @@ bot.use(async (ctx, next) => {
         loadingId = loadingMessage.message_id;
         await ctx.deleteMessage(loadingId);
         const caption = `<a href="${urlTikTok}">🔗 Tiktok Link</a>`;
-        // const urlX = res.data.url;
-        await ctx.replyWithVideo(
-          { source: res.data.url },
-          { caption: caption }
-        );
+        const resImg = await axios.get(res.data.url, {
+          responseType: 'stream',
+        });
+        await ctx.replyWithVideo({ source: resImg }, { caption: caption });
       } else {
         ctx.reply(
           `processing ${res.data.url.length} image from slideshow type`
