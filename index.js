@@ -28,7 +28,9 @@ const webhookURL = `${SERVER_URL}${URI}`;
 // middleware untuk nangkap ttdl
 bot.use(async (ctx, next) => {
   const messageText = ctx.message.text;
-
+  let loadingMessage;
+  let loadingId;
+  const chatId = ctx.chat.id;
   if (messageText.startsWith('/tiktokdl')) {
     const commandParts = messageText.split(' ');
 
@@ -42,10 +44,12 @@ bot.use(async (ctx, next) => {
         // ctx.reply(`downloading ${urlTikTok}`);
         const res = await scraper(urlTikTok);
         if (res.data.type == 'video') {
-          ctx.reply('processing video');
+          loadingMessage = await ctx.reply(`processing tiktok video`);
+          const caption = `<a href="${urlTikTok}">🔗 Tiktok Link</a>`;
           const url = res.data.url;
-          const response = await axios.get(url, { responseType: 'stream' });
-          await ctx.replyWithVideo({ source: response.data });
+          // const response = await axios.get(url, { responseType: 'stream' });
+          // await ctx.replyWithVideo({ source: response.data });
+          ctx.replyWithVideo({ source: url }, { caption: caption });
         } else {
           ctx.reply(
             `processing ${res.data.url.length} image from slideshow type`
@@ -76,10 +80,17 @@ bot.use(async (ctx, next) => {
       // ctx.reply(`downloading ${urlTikTok}`);
       const res = await scraper(urlTikTok);
       if (res.data.type == 'video') {
-        ctx.reply('processing video');
+        loadingMessage = await ctx.reply(`processing tiktok video`);
+        loadingId = loadingMessage.message_id;
+        const caption = `<a href="${urlTikTok}">🔗 Tiktok Link</a>`;
         const url = res.data.url;
-        const response = await axios.get(url, { responseType: 'stream' });
-        await ctx.replyWithVideo({ source: response.data });
+        await ctx.telegram.editMessageMedia(chatId, loadingId, {
+          type: 'video',
+          media: { url: url },
+          caption: {
+            caption,
+          },
+        });
       } else {
         ctx.reply(
           `processing ${res.data.url.length} image from slideshow type`
