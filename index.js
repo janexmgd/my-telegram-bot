@@ -87,9 +87,8 @@ bot.use(async (ctx, next) => {
         await ctx.telegram.editMessageMedia(chatId, loadingId, {
           type: 'video',
           media: { url: url },
-          caption: {
-            caption,
-          },
+          caption: caption,
+          parse_mode: 'HTML',
         });
       } else {
         ctx.reply(
