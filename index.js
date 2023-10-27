@@ -105,7 +105,6 @@ bot.use(async (ctx, next) => {
           await ctx.replyWithPhoto({ source: responseImg.data });
         }
       }
-      ctx.reply('task succeed');
       return;
     } catch (error) {
       ctx.reply(error.message);
