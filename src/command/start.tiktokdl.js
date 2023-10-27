@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { sendPhoto, sendVideo } from '../helper/sendMessage';
+import { sendPhoto, sendVideo } from '../helper/sendMessage.js';
 
 export async function processTikTokCommand(ctx, loadingId) {
   const messageText = ctx.message.text;
