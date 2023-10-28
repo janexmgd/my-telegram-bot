@@ -13,10 +13,11 @@ const instaDL = async (url) => {
       },
     });
     const data = res.data;
+    console.log(data);
     return data;
   } catch (error) {
     return error;
   }
 };
-// instaDL();
+// instaDL('https://www.instagram.com/p/Cy64VE5LzNN/?igshid=NTc4MTIwNjQ2YQ==');
 export default instaDL;

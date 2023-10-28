@@ -163,7 +163,8 @@ bot.use(async (ctx, next) => {
     }
   } else if (isInstaLink) {
     const urlInsta = messageText;
-    const data = await instaDL(urlInsta);
+    const res = await instaDL(urlInsta);
+    const data = res.data;
     const loadingMessage = await ctx.reply('processing instagram link');
     const loadingId = loadingMessage.message_id;
     const arrMedia = [];
@@ -178,11 +179,12 @@ bot.use(async (ctx, next) => {
         });
       } else {
         arrMedia.push({
-          media: { url: videoUrl },
+          media: { url: urlMedia },
           type: 'video',
           parse_mode: 'HTML',
         });
       }
+      console.log(currentIndex);
     }
     typeLink = 'Instagram';
     await ctx.deleteMessage(loadingId);
