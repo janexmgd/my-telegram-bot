@@ -180,7 +180,7 @@ bot.use(async (ctx, next) => {
         console.log(extension);
         if (extension == 'jpg') {
           arrMedia.push({
-            media: { url: imgUrl },
+            media: { url: urlMedia },
             type: 'photo',
             parse_mode: 'HTML',
           });
