@@ -1,4 +1,4 @@
-import client from '../app/client';
+import client from '../app/client.js';
 // import IgDL from 'instagram-url-direct';
 const instaDL = async (url) => {
   try {
