@@ -108,15 +108,18 @@ bot.use(async (ctx, next) => {
           arrMedia.push({
             media: { url: imgUrl },
             type: 'photo',
-            caption: caption,
-            parse_mode: 'HTML',
+            // caption: caption,
+            // parse_mode: 'HTML',
           });
         }
         await ctx.deleteMessage(slideshowmsgId);
 
         const chunkArrMedia = chunkArray(arrMedia, 10);
         for (const chunk of chunkArrMedia) {
-          await bot.telegram.sendMediaGroup(chatId, chunk);
+          await bot.telegram.sendMediaGroup(chatId, chunk, {
+            caption: caption,
+            parse_mode: 'HTML',
+          });
         }
       }
       return;
