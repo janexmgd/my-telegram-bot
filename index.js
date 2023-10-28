@@ -32,6 +32,7 @@ bot.use(async (ctx, next) => {
   let loadingMessage;
   let loadingId;
   const chatId = ctx.chat.id;
+  const caption = `####Made with Love by janexmgd#####`;
   if (messageText.startsWith('/tiktokdl')) {
     const commandParts = messageText.split(' ');
 
@@ -40,49 +41,8 @@ bot.use(async (ctx, next) => {
       ctx.reply('Gunakan perintah seperti ini: /tiktokdl [URL]');
     } else {
       const urlTikTok = commandParts[1];
-
-      try {
-        // ctx.reply(`downloading ${urlTikTok}`);
-        const res = await scraper(urlTikTok);
-        if (res.data.type == 'video') {
-          loadingMessage = await ctx.reply(`processing tiktok video`);
-          const caption = `<a href="${urlTikTok}">🔗 Tiktok Link</a>`;
-          const url = res.data.url;
-          // const response = await axios.get(url, { responseType: 'stream' });
-          // await ctx.replyWithVideo({ source: response.data });
-          ctx.replyWithVideo({ source: url }, { caption: caption });
-        } else {
-          ctx.reply(
-            `processing ${res.data.url.length} image from slideshow type`
-          );
-          for (let index = 0; index < res.data.url.length; index++) {
-            const imgUrl = res.data.url[index];
-            const responseImg = await axios.get(imgUrl, {
-              responseType: 'arraybuffer',
-            });
-            await ctx.replyWithPhoto({ source: responseImg.data });
-          }
-        }
-        ctx.reply('task succeed');
-        return;
-      } catch (error) {
-        ctx.reply(error.message);
-        return;
-      }
-    }
-  }
-  const isTiktokLink = messageText.match(TiktokLink);
-  const isTwitterLink = messageText.match(TwitterLink);
-  const isInstaLink = messageText.match(InstaLink);
-  const isFacebookLink = messageText.match(FacebookLink);
-  if (isTiktokLink) {
-    try {
-      const urlTikTok = messageText;
       const res = await scraper(urlTikTok);
-      const caption = `
-      <a href="${urlTikTok}">Link Tiktok</a>
-      Made with Love by janexmgd
-      `;
+      const caption = `####Made with Love by janexmgd#####`;
       if (res.data.type == 'video') {
         loadingMessage = await ctx.reply(`processing tiktok video`);
         loadingId = loadingMessage.message_id;
@@ -119,7 +79,50 @@ bot.use(async (ctx, next) => {
         }
       }
       return;
+    }
+  }
+  const isTiktokLink = messageText.match(TiktokLink);
+  const isTwitterLink = messageText.match(TwitterLink);
+  const isInstaLink = messageText.match(InstaLink);
+  const isFacebookLink = messageText.match(FacebookLink);
+  if (isTiktokLink) {
+    try {
+      const urlTikTok = messageText;
+      const res = await scraper(urlTikTok);
+
+      if (res.data.type == 'video') {
+        loadingMessage = await ctx.reply(`processing tiktok video`);
+        loadingId = loadingMessage.message_id;
+        await ctx.deleteMessage(loadingId);
+        const VideoUrl = res.data.url;
+        await bot.telegram.sendVideo(chatId, VideoUrl, {
+          caption: caption,
+          parse_mode: 'HTML',
+        });
+      } else {
+        loadingMessage = await ctx.reply(`processing tiktok image`);
+        loadingId = loadingMessage.message_id;
+
+        const arrMedia = [];
+        for (let index = 0; index < res.data.url.length; index++) {
+          const imgUrl = res.data.url[index];
+          arrMedia.push({
+            media: { url: imgUrl },
+            type: 'photo',
+            parse_mode: 'HTML',
+          });
+        }
+
+        await ctx.deleteMessage(loadingId);
+
+        const chunkArrMedia = chunkArray(arrMedia, 10);
+        for (const chunk of chunkArrMedia) {
+          await bot.telegram.sendMediaGroup(chatId, chunk);
+        }
+      }
+      return;
     } catch (error) {
+      ctx.reply(error);
       ctx.reply(error.message);
       return;
     }
@@ -128,23 +131,41 @@ bot.use(async (ctx, next) => {
       const urlTwitter = messageText;
       const data = await XTwitterDL(urlTwitter);
       //
-      ctx.reply(`processing twitter link`);
+      const loadingMessage = await ctx.reply(`processing twitter link`);
+      const loadingId = loadingMessage.message_id;
+      const arrMedia = [];
       for (let index = 0; index < data.result.media.length; index++) {
         if (data.result.media[index].type == 'video') {
           // ctx.reply('processing video');
-          const url = res.data.result.media[index].url;
-          const response = await axios.get(url, { responseType: 'stream' });
-          await ctx.replyWithVideo({ source: response.data });
+          // const url = res.data.result.media[index].url;
+          // const response = await axios.get(url, { responseType: 'stream' });
+          // await ctx.replyWithVideo({ source: response.data });
+          const videoUrl = res.data.result.media[index].url;
+          arrMedia.push({
+            media: { url: videoUrl },
+            type: 'video',
+            parse_mode: 'HTML',
+          });
         } else {
           // ctx.reply('processing photo');
           const imgUrl = data.result.media[index].url;
-          const responseImg = await axios.get(imgUrl, {
-            responseType: 'arraybuffer',
+          // const responseImg = await axios.get(imgUrl, {
+          //   responseType: 'arraybuffer',
+          // });
+          // await ctx.replyWithPhoto({ source: responseImg.data });
+          arrMedia.push({
+            media: { url: imgUrl },
+            type: 'photo',
+            parse_mode: 'HTML',
           });
-          await ctx.replyWithPhoto({ source: responseImg.data });
         }
       }
-      ctx.reply('task success');
+      await ctx.deleteMessage(loadingId);
+
+      const chunkArrMedia = chunkArray(arrMedia, 10);
+      for (const chunk of chunkArrMedia) {
+        await bot.telegram.sendMediaGroup(chatId, chunk);
+      }
       return;
     } catch (error) {
       ctx.reply(error.message);
@@ -226,6 +247,8 @@ bot.use(async (ctx, next) => {
     ctx.reply('Pinggg!!!!!!');
     return;
   }
+  ctx.reply(caption);
+  ctx.reply('TASK SUCCESS');
   return;
 });
 const setupWebhook = async () => {
