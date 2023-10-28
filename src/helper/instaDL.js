@@ -1,10 +1,18 @@
-import IgDL from '@sasmeee/igdl';
+import client from '../app/client';
 // import IgDL from 'instagram-url-direct';
 const instaDL = async (url) => {
   try {
-    // const url =
-    //   'https://www.instagram.com/p/CybJZkLLWur/?utm_source=ig_web_copy_link';
-    const data = await IgDL(url);
+    const res = await client({
+      url: 'https://sosmed-wrapper.vercel.app/igdl',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: {
+        url: url,
+      },
+    });
+    const data = res.data;
     return data;
   } catch (error) {
     return error;

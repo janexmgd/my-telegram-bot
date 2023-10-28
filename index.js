@@ -32,7 +32,7 @@ bot.use(async (ctx, next) => {
   let loadingMessage;
   let loadingId;
   const chatId = ctx.chat.id;
-  const caption = `#####Made with Love by janexmgd#####`;
+  const caption = ` Made with ♡ by janexmgd `;
   if (messageText.startsWith('/tiktokdl')) {
     const commandParts = messageText.split(' ');
 
@@ -167,37 +167,21 @@ bot.use(async (ctx, next) => {
     const loadingMessage = await ctx.reply('processing instagram link');
     const loadingId = loadingMessage.message_id;
     const arrMedia = [];
-    for (let index = 0; index < data.length; index++) {
-      let urlMedia = data[index].download_link;
-      // console.log(urlMedia);
-      const parsedUrl = urlModule.parse(urlMedia);
-      const pathnameSegments = parsedUrl.pathname.split('/');
-      const filenameQuery = pathnameSegments[pathnameSegments.length - 1];
-      const filename = filenameQuery.split('?')[0];
-      const extensionMatch = filename.match(/\.(\w+)$/);
-      if (extensionMatch) {
-        const extension = extensionMatch[1];
-        console.log(extension);
-        if (extension == 'jpg') {
-          arrMedia.push({
-            media: { url: urlMedia },
-            type: 'photo',
-            parse_mode: 'HTML',
-          });
-        } else {
-          arrMedia.push({
-            media: { url: videoUrl },
-            type: 'video',
-            parse_mode: 'HTML',
-          });
-        }
-      } else {
-        // for reel ig
-        const responseVideo = await axios.get(urlMedia, {
-          responseType: 'stream',
+    for (let index = 0; index < data.url.mediaUrl.length; index++) {
+      const currentIndex = data.url.mediaUrl[index];
+      let urlMedia = currentIndex.url;
+      if (currentIndex.type == 'image') {
+        arrMedia.push({
+          media: { url: urlMedia },
+          type: 'photo',
+          parse_mode: 'HTML',
         });
-        await ctx.replyWithVideo({ source: responseVideo.data });
-        await bot.telegram.sendVideo(chatId, urlMedia);
+      } else {
+        arrMedia.push({
+          media: { url: videoUrl },
+          type: 'video',
+          parse_mode: 'HTML',
+        });
       }
     }
     typeLink = 'Instagram';
