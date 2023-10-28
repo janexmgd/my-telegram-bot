@@ -105,20 +105,18 @@ bot.use(async (ctx, next) => {
         let slideshowmsgId = slideshowmsg.message_id;
         for (let index = 0; index < res.data.url.length; index++) {
           const imgUrl = res.data.url[index];
-          const responseImg = await axios.get(imgUrl, {
-            responseType: 'arraybuffer',
-          });
           arrMedia.push({
-            media: responseImg,
+            media: { url: imgUrl },
+            type: 'photo',
             caption: caption,
             parse_mode: 'HTML',
           });
         }
         await ctx.deleteMessage(slideshowmsgId);
 
-        const chunkArrMedia = chunkArray(arrMedia, 3);
+        const chunkArrMedia = chunkArray(arrMedia, 10);
         for (const chunk of chunkArrMedia) {
-          await ctx.sendMediaGroup(chunk);
+          await bot.telegram.sendMediaGroup(chatId, chunk);
         }
       }
       return;
