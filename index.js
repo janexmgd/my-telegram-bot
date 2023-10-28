@@ -78,7 +78,6 @@ bot.use(async (ctx, next) => {
   if (isTiktokLink) {
     try {
       const urlTikTok = messageText;
-      // ctx.reply(`downloading ${urlTikTok}`);
       const res = await scraper(urlTikTok);
       const caption = `
       <a href="${urlTikTok}">Link Tiktok</a>
@@ -88,14 +87,11 @@ bot.use(async (ctx, next) => {
         loadingMessage = await ctx.reply(`processing tiktok video`);
         loadingId = loadingMessage.message_id;
         await ctx.deleteMessage(loadingId);
-
-        const resImg = await axios.get(res.data.url, {
-          responseType: 'stream',
+        const VideoUrl = res.data.url;
+        await bot.telegram.sendVideo(chatId, VideoUrl, {
+          caption: caption,
+          parse_mode: 'HTML',
         });
-        await ctx.replyWithVideo(
-          { source: resImg.data },
-          { caption: caption, parse_mode: 'HTML' }
-        );
       } else {
         loadingMessage = await ctx.reply(`processing tiktok image`);
         loadingId = loadingMessage.message_id;
@@ -108,8 +104,8 @@ bot.use(async (ctx, next) => {
           arrMedia.push({
             media: { url: imgUrl },
             type: 'photo',
-            // caption: caption,
-            // parse_mode: 'HTML',
+            caption: caption,
+            parse_mode: 'HTML',
           });
         }
         await ctx.deleteMessage(slideshowmsgId);
