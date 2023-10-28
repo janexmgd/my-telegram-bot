@@ -32,7 +32,7 @@ bot.use(async (ctx, next) => {
   let loadingMessage;
   let loadingId;
   const chatId = ctx.chat.id;
-  const caption = `####Made with Love by janexmgd#####`;
+  const caption = `#####Made with Love by janexmgd#####`;
   if (messageText.startsWith('/tiktokdl')) {
     const commandParts = messageText.split(' ');
 
@@ -85,6 +85,7 @@ bot.use(async (ctx, next) => {
   const isTwitterLink = messageText.match(TwitterLink);
   const isInstaLink = messageText.match(InstaLink);
   const isFacebookLink = messageText.match(FacebookLink);
+  let typeLink;
   if (isTiktokLink) {
     try {
       const urlTikTok = messageText;
@@ -96,7 +97,6 @@ bot.use(async (ctx, next) => {
         await ctx.deleteMessage(loadingId);
         const VideoUrl = res.data.url;
         await bot.telegram.sendVideo(chatId, VideoUrl, {
-          caption: caption,
           parse_mode: 'HTML',
         });
       } else {
@@ -120,7 +120,7 @@ bot.use(async (ctx, next) => {
           await bot.telegram.sendMediaGroup(chatId, chunk);
         }
       }
-      return;
+      typeLink = 'Tiktok';
     } catch (error) {
       ctx.reply(error);
       ctx.reply(error.message);
@@ -136,10 +136,6 @@ bot.use(async (ctx, next) => {
       const arrMedia = [];
       for (let index = 0; index < data.result.media.length; index++) {
         if (data.result.media[index].type == 'video') {
-          // ctx.reply('processing video');
-          // const url = res.data.result.media[index].url;
-          // const response = await axios.get(url, { responseType: 'stream' });
-          // await ctx.replyWithVideo({ source: response.data });
           const videoUrl = res.data.result.media[index].url;
           arrMedia.push({
             media: { url: videoUrl },
@@ -147,12 +143,7 @@ bot.use(async (ctx, next) => {
             parse_mode: 'HTML',
           });
         } else {
-          // ctx.reply('processing photo');
           const imgUrl = data.result.media[index].url;
-          // const responseImg = await axios.get(imgUrl, {
-          //   responseType: 'arraybuffer',
-          // });
-          // await ctx.replyWithPhoto({ source: responseImg.data });
           arrMedia.push({
             media: { url: imgUrl },
             type: 'photo',
@@ -161,12 +152,11 @@ bot.use(async (ctx, next) => {
         }
       }
       await ctx.deleteMessage(loadingId);
-
+      typeLink = 'Twitter';
       const chunkArrMedia = chunkArray(arrMedia, 10);
       for (const chunk of chunkArrMedia) {
         await bot.telegram.sendMediaGroup(chatId, chunk);
       }
-      return;
     } catch (error) {
       ctx.reply(error.message);
       return;
@@ -174,29 +164,32 @@ bot.use(async (ctx, next) => {
   } else if (isInstaLink) {
     const urlInsta = messageText;
     const data = await instaDL(urlInsta);
-    ctx.reply('processing instagram link');
+    const loadingMessage = await ctx.reply('processing instagram link');
+    const loadingId = loadingMessage.message_id;
+    const arrMedia = [];
     for (let index = 0; index < data.length; index++) {
       let urlMedia = data[index].download_link;
-      console.log(urlMedia);
+      // console.log(urlMedia);
       const parsedUrl = urlModule.parse(urlMedia);
       const pathnameSegments = parsedUrl.pathname.split('/');
-      const filenameQuery = pathnameSegments[pathnameSegments.length - 1]; // Mengambil bagian terakhir dari path sebagai nama file
-      // Menghapus query string dari nama file
+      const filenameQuery = pathnameSegments[pathnameSegments.length - 1];
       const filename = filenameQuery.split('?')[0];
       const extensionMatch = filename.match(/\.(\w+)$/);
       if (extensionMatch) {
         const extension = extensionMatch[1];
         console.log(extension);
         if (extension == 'jpg') {
-          const responseImg = await axios.get(urlMedia, {
-            responseType: 'arraybuffer',
+          arrMedia.push({
+            media: { url: imgUrl },
+            type: 'photo',
+            parse_mode: 'HTML',
           });
-          await ctx.replyWithPhoto({ source: responseImg.data });
         } else {
-          const responseVideo = await axios.get(urlMedia, {
-            responseType: 'stream',
+          arrMedia.push({
+            media: { url: videoUrl },
+            type: 'video',
+            parse_mode: 'HTML',
           });
-          await ctx.replyWithVideo({ source: responseVideo.data });
         }
       } else {
         // for reel ig
@@ -204,9 +197,15 @@ bot.use(async (ctx, next) => {
           responseType: 'stream',
         });
         await ctx.replyWithVideo({ source: responseVideo.data });
+        await bot.telegram.sendVideo(chatId, urlMedia);
       }
     }
-    ctx.reply(data);
+    typeLink = 'Instagram';
+    await ctx.deleteMessage(loadingId);
+    const chunkArrMedia = chunkArray(arrMedia, 10);
+    for (const chunk of chunkArrMedia) {
+      await bot.telegram.sendMediaGroup(chatId, chunk);
+    }
   } else if (isFacebookLink) {
     try {
       const urlFacebook = messageText;
@@ -247,8 +246,7 @@ bot.use(async (ctx, next) => {
     ctx.reply('Pinggg!!!!!!');
     return;
   }
-  ctx.reply(caption);
-  ctx.reply('TASK SUCCESS');
+  ctx.reply(`Success get media from ${typeLink}\n${caption}`);
   return;
 });
 const setupWebhook = async () => {
