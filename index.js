@@ -2,8 +2,6 @@
 import express from 'express';
 import { Telegraf } from 'telegraf';
 import dotenv from 'dotenv';
-import axios from 'axios';
-import urlModule from 'url';
 import client from './src/app/client.js';
 import scraper from './src/helper/scraper.js';
 import XTwitterDL from './src/helper/twitterDL.js';
@@ -35,7 +33,6 @@ bot.use(async (ctx, next) => {
   const caption = ` Made with ♡ by janexmgd `;
   if (messageText.startsWith('/tiktokdl')) {
     const commandParts = messageText.split(' ');
-
     if (commandParts.length !== 2) {
       // Pesan harus berisi perintah dan URL TikTok
       ctx.reply('Gunakan perintah seperti ini: /tiktokdl [URL]');
@@ -229,7 +226,7 @@ bot.use(async (ctx, next) => {
       return;
     }
   } else {
-    ctx.reply('Pinggg!!!!!!');
+    ctx.reply(`${caption}`);
     return;
   }
   ctx.reply(`Success get media from ${typeLink}\n${caption}`);
