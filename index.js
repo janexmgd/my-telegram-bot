@@ -167,8 +167,8 @@ bot.use(async (ctx, next) => {
     const loadingMessage = await ctx.reply('processing instagram link');
     const loadingId = loadingMessage.message_id;
     const arrMedia = [];
-    for (let index = 0; index < data.url.mediaUrl.length; index++) {
-      const currentIndex = data.url.mediaUrl[index];
+    for (let index = 0; index < data.mediaUrl.length; index++) {
+      const currentIndex = data.mediaUrl[index];
       let urlMedia = currentIndex.url;
       if (currentIndex.type == 'image') {
         arrMedia.push({
