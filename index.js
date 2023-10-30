@@ -133,7 +133,7 @@ bot.use(async (ctx, next) => {
       const arrMedia = [];
       for (let index = 0; index < data.result.media.length; index++) {
         if (data.result.media[index].type == 'video') {
-          const videoUrl = res.data.result.media[index].url;
+          const videoUrl = data.result.media[index].url;
           arrMedia.push({
             media: { url: videoUrl },
             type: 'video',
