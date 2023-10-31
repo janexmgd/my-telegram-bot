@@ -3,7 +3,7 @@ import client from '../app/client.js';
 const instaDL = async (url) => {
   try {
     const res = await client({
-      url: 'https://sosmed-wrapper.vercel.app/igdl',
+      url: 'https://sosmed-wrapper.vercel.app/dl/instagram',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
