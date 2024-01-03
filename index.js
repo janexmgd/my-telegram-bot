@@ -197,8 +197,8 @@ bot.use(async (ctx, next) => {
       let url;
       // console.log(`ini hd: ${data.hd}`);
       // console.log(`ini sd: ${data.sd}`);
-      if (data?.hd) {
-        url = data.hd;
+      if (data?.quality?.hd) {
+        url = data.quality.hd;
         // const res = await axios.get(url, {
         //   responseType: 'stream',
         // });
@@ -207,8 +207,8 @@ bot.use(async (ctx, next) => {
         hd link : ${url}
         `);
         return;
-      } else if (data?.sd) {
-        url = data.sd;
+      } else if (data?.quality?.sd) {
+        url = data.quality.sd;
         // const res = await axios.get(url, {
         //   responseType: 'stream',
         // });
