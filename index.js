@@ -31,6 +31,38 @@ bot.use(async (ctx, next) => {
   let loadingId;
   const chatId = ctx.chat.id;
   const caption = ` Made with ♡ by janexmgd `;
+  if (messageText.startsWith('/check_authList')) {
+    try {
+      const r = await axios.get(`https://app-auth-one.vercel.app/auth`)
+      const list = JSON.stringify(r.data.data)
+      ctx.reply(`Found ${r.data.data.length} user`)
+      ctx.reply(list)
+    } catch (error) {
+      ctx.reply(error)
+      ctx.reply(error.message)
+    }
+  }
+  if (messageText.startsWith('/create_auth')) {
+    const commandParts = messageText.split(' ')
+    if (commandParts.length !== 2) {
+      ctx.reply('Gunakan perintah seperti ini: /tiktokdl [machine_id]');
+    } else {
+      const machine_id = commandParts[1]
+      try {
+        const r = await axios.post(`https://app-auth-one.vercel.app/auth/create`, {
+          machine_id: machine_id,
+        });
+        if (r.data) {
+          const { id, token, machine_id } = r.data.data
+          const message = `id : ${id}\nmachine_id : ${machine_id}\ntoken : ${token}`
+          ctx.reply(message)
+        }
+      } catch (error) {
+        ctx.reply(error)
+        ctx.reply(error.message)
+      }
+    }
+  }
   if (messageText.startsWith('/tiktokdl')) {
     const commandParts = messageText.split(' ');
     if (commandParts.length !== 2) {
