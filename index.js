@@ -35,8 +35,12 @@ bot.use(async (ctx, next) => {
     try {
       const r = await axios.get(`https://app-auth-one.vercel.app/auth`)
       const list = JSON.stringify(r.data.data)
-      ctx.reply(`Found ${r.data.data.length} user`)
-      ctx.reply(list)
+      if (r.data.data.length == 0) {
+        ctx.reply('no user registered')
+      } else {
+        ctx.reply(`Found ${r.data.data.length} user`)
+        ctx.reply(list)
+      }
     } catch (error) {
       ctx.reply(error)
       ctx.reply(error.message)
