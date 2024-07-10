@@ -258,7 +258,7 @@ bot.use(async (ctx, next) => {
         await bot.telegram.sendMediaGroup(chatId, chunk);
       }
     } catch (error) {
-      ctx.reply(error.message);
+      ctx.reply('fail error');
       return;
     }
   } else if (isInstaLink) {
