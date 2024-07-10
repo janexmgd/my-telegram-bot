@@ -128,6 +128,7 @@ bot.use(async (ctx, next) => {
       // const res = await scraper(urlTikTok);
       const pattern = /https:\/\/www\.tiktok\.com\/@[^/]+\/video\/(\d+)/;
       let urlData;
+      loadingMessage = await ctx.reply(`processing tiktok video`);
       if (url.match(pattern)) {
         // console.log('pong');
         urlData = url;
@@ -140,11 +141,13 @@ bot.use(async (ctx, next) => {
           const redirectMatch = res.request.res.responseUrl.match(pattern);
           if (redirectMatch) {
             // console.log(redirectMatch);
+            console.log(urlData);
             urlData = redirectMatch[0];
           }
         } catch (error) {
           const match = error.request._currentUrl.match(pattern);
           if (match) {
+            console.log(urlData);
             urlData = match[0];
           }
           throw new Error('PARSE must be a boolean!');
@@ -178,7 +181,7 @@ bot.use(async (ctx, next) => {
           },
         }
       );
-      loadingMessage = await ctx.reply(`processing tiktok video`);
+
       loadingId = loadingMessage.message_id;
       await ctx.deleteMessage(loadingId);
       const VideoUrl = data.url;
