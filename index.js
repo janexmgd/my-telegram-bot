@@ -33,37 +33,40 @@ bot.use(async (ctx, next) => {
   const caption = ` Made with ♡ by janexmgd `;
   if (messageText.startsWith('/check_authList')) {
     try {
-      const r = await axios.get(`https://app-auth-one.vercel.app/auth`)
-      const list = JSON.stringify(r.data.data)
+      const r = await axios.get(`https://app-auth-one.vercel.app/auth`);
+      const list = JSON.stringify(r.data.data);
       if (r.data.data.length == 0) {
-        ctx.reply('no user registered')
+        ctx.reply('no user registered');
       } else {
-        ctx.reply(`Found ${r.data.data.length} user`)
-        ctx.reply(list)
+        ctx.reply(`Found ${r.data.data.length} user`);
+        ctx.reply(list);
       }
     } catch (error) {
-      ctx.reply(error)
-      ctx.reply(error.message)
+      ctx.reply(error);
+      ctx.reply(error.message);
     }
   }
   if (messageText.startsWith('/create_auth')) {
-    const commandParts = messageText.split(' ')
+    const commandParts = messageText.split(' ');
     if (commandParts.length !== 2) {
       ctx.reply('Gunakan perintah seperti ini: /tiktokdl [machine_id]');
     } else {
-      const machine_id = commandParts[1]
+      const machine_id = commandParts[1];
       try {
-        const r = await axios.post(`https://app-auth-one.vercel.app/auth/create`, {
-          machine_id: machine_id,
-        });
+        const r = await axios.post(
+          `https://app-auth-one.vercel.app/auth/create`,
+          {
+            machine_id: machine_id,
+          }
+        );
         if (r.data) {
-          const { id, token, machine_id } = r.data.data
-          const message = `id : ${id}\nmachine_id : ${machine_id}\ntoken : ${token}`
-          ctx.reply(message)
+          const { id, token, machine_id } = r.data.data;
+          const message = `id : ${id}\nmachine_id : ${machine_id}\ntoken : ${token}`;
+          ctx.reply(message);
         }
       } catch (error) {
-        ctx.reply(error)
-        ctx.reply(error.message)
+        ctx.reply(error);
+        ctx.reply(error.message);
       }
     }
   }
@@ -122,8 +125,43 @@ bot.use(async (ctx, next) => {
   if (isTiktokLink) {
     try {
       const urlTikTok = messageText;
-      const res = await scraper(urlTikTok);
-
+      // const res = await scraper(urlTikTok);
+      const { data } = await axios.post(
+        `https://api.cobalt.tools/api/json`,
+        {
+          url: urlTikTok,
+        },
+        {
+          headers: {
+            accept: 'application/json',
+            'accept-language': 'en-US,en;q=0.9',
+            'cache-control': 'no-cache',
+            'content-type': 'application/json',
+            origin: 'https://cobalt.tools',
+            pragma: 'no-cache',
+            priority: 'u=1, i',
+            referer: 'https://cobalt.tools/',
+            'sec-ch-ua':
+              '"Not/A)Brand";v="8", "Chromium";v="126", "Brave";v="126"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-site',
+            'sec-gpc': '1',
+            'user-agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+          },
+        }
+      );
+      loadingMessage = await ctx.reply(`processing tiktok video`);
+      loadingId = loadingMessage.message_id;
+      await ctx.deleteMessage(loadingId);
+      const VideoUrl = data.url;
+      await bot.telegram.sendVideo(chatId, VideoUrl, {
+        parse_mode: 'HTML',
+      });
+      return;
       if (res.data.type == 'video') {
         loadingMessage = await ctx.reply(`processing tiktok video`);
         loadingId = loadingMessage.message_id;
