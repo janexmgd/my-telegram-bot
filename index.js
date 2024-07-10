@@ -124,12 +124,36 @@ bot.use(async (ctx, next) => {
   let typeLink;
   if (isTiktokLink) {
     try {
-      const urlTikTok = messageText;
+      const url = messageText;
       // const res = await scraper(urlTikTok);
+      const pattern = /https:\/\/www\.tiktok\.com\/@[^/]+\/video\/(\d+)/;
+      let urlData;
+      if (url.match(pattern)) {
+        // console.log('pong');
+        urlData = url;
+      } else {
+        try {
+          const res = await client({
+            url: url,
+            method: 'GET',
+          });
+          const redirectMatch = res.request.res.responseUrl.match(pattern);
+          if (redirectMatch) {
+            // console.log(redirectMatch);
+            urlData = redirectMatch[0];
+          }
+        } catch (error) {
+          const match = error.request._currentUrl.match(pattern);
+          if (match) {
+            urlData = match[0];
+          }
+          throw new Error('PARSE must be a boolean!');
+        }
+      }
       const { data } = await axios.post(
         `https://api.cobalt.tools/api/json`,
         {
-          url: urlTikTok,
+          url: urlData,
         },
         {
           headers: {
