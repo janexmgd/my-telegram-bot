@@ -124,6 +124,7 @@ bot.use(async (ctx, next) => {
   let typeLink;
   if (isTiktokLink) {
     try {
+      await ctx.reply('mememek');
       const url = messageText;
       // const res = await scraper(urlTikTok);
       const pattern = /https:\/\/www\.tiktok\.com\/@[^/]+\/video\/(\d+)/;
