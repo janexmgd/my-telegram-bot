@@ -182,6 +182,7 @@ bot.use(async (ctx, next) => {
       loadingId = loadingMessage.message_id;
       await ctx.deleteMessage(loadingId);
       const VideoUrl = data.url;
+      console.log(data);
       await bot.telegram.sendVideo(chatId, VideoUrl, {
         parse_mode: 'HTML',
       });
